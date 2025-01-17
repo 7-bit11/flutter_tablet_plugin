@@ -9,12 +9,6 @@ class SignaturePadController extends ChangeNotifier {
   /// 存储每个路径的绘制点
   ValueNotifier<List<List<Offset>>> points = ValueNotifier([]);
 
-  ///  文本颜色
-  ValueNotifier<Color> textColor = ValueNotifier(Colors.black);
-
-  /// 画笔大小
-  ValueNotifier<double> penSize = ValueNotifier(5.0);
-
   /// 当用户开始触摸屏幕时，创建新的路径和新的点列表
   void onPanStart(DragStartDetails details) {
     paths.value.add(
@@ -35,10 +29,10 @@ class SignaturePadController extends ChangeNotifier {
     if (point.length >= 2) {
       //_paths[index] = path;
       path.quadraticBezierTo(
-        point[points.value.length - 2].dx,
-        point[points.value.length - 2].dy,
-        (point[points.value.length - 2].dx + details.localPosition.dx) / 2,
-        (point[points.value.length - 2].dy + details.localPosition.dy) / 2,
+        point[point.length - 2].dx,
+        point[point.length - 2].dy,
+        (point[point.length - 2].dx + details.localPosition.dx) / 2,
+        (point[point.length - 2].dy + details.localPosition.dy) / 2,
       );
     }
   }

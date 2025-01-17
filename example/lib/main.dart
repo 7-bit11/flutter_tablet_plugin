@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:flutter_tablet_plugin/flutter_tablet.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +26,9 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on:\n'),
+          child: SignaturePad(
+            controller: SignaturePadController(),
+          ),
         ),
       ),
     );

@@ -1,72 +1,59 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tablet_plugin/src/signature_pad_controller.dart';
 
 class SignaturePad extends StatefulWidget {
-  const SignaturePad({super.key});
+  SignaturePad({
+    super.key,
+    required this.controller,
+    this.textColor = Colors.black,
+    this.penSize = 5.0,
+    this.strokeCap = StrokeCap.round,
+  });
+  final SignaturePadController controller;
 
+  ///  文本颜色
+  Color textColor;
+
+  /// 画笔大小
+  double penSize;
+
+  /// 画笔样式
+  StrokeCap strokeCap;
   @override
   _SignaturePadState createState() => _SignaturePadState();
 }
 
 class _SignaturePadState extends State<SignaturePad> {
-  // 存储用户绘制的路径
-  final List<Path> _paths = [];
-  // 存储每个路径的绘制点
-  final List<List<Offset>> _points = [];
+  late SignaturePadController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = widget.controller;
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onPanStart: (DragStartDetails details) {
-        setState(() {
-          // 当用户开始触摸屏幕时，创建新的路径和新的点列表
-
-          _paths.add(Path()
-            ..moveTo(details.localPosition.dx, details.localPosition.dy));
-          _points.add([details.localPosition]);
-        });
+        _controller.onPanStart(details);
       },
       onPanUpdate: (DragUpdateDetails details) {
-        setState(() {
-          // 获取当前正在绘制的路径和点列表
-          final int index = _paths.length - 1;
-          final Path path = _paths[index];
-          final List<Offset> points = _points[index];
-          // 将当前触摸点添加到点列表中
-          points.add(details.localPosition);
-          // 从上次的点到当前点绘制直线
-          if (points.length >= 2) {
-            //_paths[index] = path;
-            path.quadraticBezierTo(
-              points[points.length - 2].dx,
-              points[points.length - 2].dy,
-              (points[points.length - 2].dx + details.localPosition.dx) / 2,
-              (points[points.length - 2].dy + details.localPosition.dy) / 2,
-            );
-          }
-        });
+        _controller.onPanUpdate(details);
+        setState(() {});
       },
-      onPanEnd: (DragEndDetails details) {
-        // setState(() {
-        //   // 当用户结束触摸时，完成当前路径的绘制
-        //   final int index = _paths.length - 1;
-        //   final Path path = _paths[index];
-        //   final List<Offset> points = _points[index];
-        //   // 从最后一个点到当前点绘制直线
-        //   if (points.length >= 2) {
-        //     path.quadraticBezierTo(
-        //       points[points.length - 1].dx,
-        //       points[points.length - 1].dy,
-        //       points[points.length - 1].dx,
-        //       points[points.length - 1].dy,
-        //     );
-        //   }
-        // });
-      },
-      child: CustomPaint(
-        painter: SignaturePainter(_paths),
-        size: Size.infinite,
+      child: ListenableBuilder(
+        listenable: _controller.paths,
+        builder: (BuildContext context, Widget? child) {
+          return CustomPaint(
+            painter: SignaturePainter(_controller.paths.value,
+                textColor: widget.textColor,
+                penSize: widget.penSize,
+                strokeCap: widget.strokeCap),
+            size: Size.infinite,
+          );
+        },
       ),
     );
   }
@@ -75,14 +62,25 @@ class _SignaturePadState extends State<SignaturePad> {
 class SignaturePainter extends CustomPainter {
   final List<Path> paths;
 
-  SignaturePainter(this.paths);
+  ///  文本颜色
+  Color textColor;
+
+  /// 画笔大小
+  double penSize;
+
+  /// 画笔样式
+  StrokeCap strokeCap;
+  SignaturePainter(this.paths,
+      {required this.textColor,
+      required this.penSize,
+      required this.strokeCap});
 
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
       ..color = Colors.black
-      ..strokeWidth = 5.0
-      ..strokeCap = StrokeCap.round
+      ..strokeWidth = penSize
+      ..strokeCap = strokeCap
       ..style = PaintingStyle.stroke;
     // 绘制每个路径
     for (Path path in paths) {
