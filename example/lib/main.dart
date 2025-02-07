@@ -18,19 +18,36 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  final SignaturePadController _controller = SignaturePadController();
+
+  void _clear() {
+    _controller.cancelStep();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: SignaturePad(
-            controller: SignaturePadController(),
-          ),
+        home: Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: Center(
+        child: SignaturePad(
+          controller: _controller,
         ),
       ),
-    );
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.arrow_left), label: "Back"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.arrow_right), label: "Forward"),
+        ],
+        onTap: (value) {
+          if (value == 0) {
+            _controller.cancelStep();
+          }
+        },
+      ),
+    ));
   }
 }

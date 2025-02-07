@@ -36,4 +36,13 @@ class SignaturePadController extends ChangeNotifier {
       );
     }
   }
+
+  /// 取消上一步绘制
+  void cancelStep() {
+    if (paths.value.isNotEmpty) {
+      paths.value.removeLast();
+      points.value.removeLast();
+      notifyListeners();
+    }
+  }
 }
