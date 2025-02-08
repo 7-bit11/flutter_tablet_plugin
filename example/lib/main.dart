@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tablet_plugin/flutter_tablet.dart';
 
@@ -24,6 +26,10 @@ class _MyAppState extends State<MyApp> {
     _controller.cancelStep();
   }
 
+  void _forward() {
+    _controller.forwardStep();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -37,14 +43,39 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.arrow_left), label: "Back"),
+        items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.arrow_right), label: "Forward"),
+              icon: ListenableBuilder(
+                builder: (context, clid) {
+                  return Icon(
+                    Icons.arrow_left,
+                    color: _controller.isCancelStep.value
+                        ? Colors.red
+                        : Colors.blue,
+                  );
+                },
+                listenable: _controller.isCancelStep,
+              ),
+              label: "Back"),
+          BottomNavigationBarItem(
+              icon: ListenableBuilder(
+                builder: (context, clid) {
+                  return Icon(
+                    Icons.arrow_right,
+                    color: _controller.isForwardStep.value
+                        ? Colors.red
+                        : Colors.blue,
+                  );
+                },
+                listenable: _controller.isForwardStep,
+              ),
+              label: "Forward"),
         ],
         onTap: (value) {
           if (value == 0) {
-            _controller.cancelStep();
+            _clear();
+          } else if (value == 1) {
+            _forward();
           }
         },
       ),
