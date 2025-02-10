@@ -15,18 +15,23 @@ class SignaturePadController extends ChangeNotifier {
   /// 存储每个路径的绘制点历史记录
   ValueNotifier<List<List<Offset>>> pointsHistory = ValueNotifier([]);
 
-  ValueNotifier<bool> isCancelStep = ValueNotifier(false);
+  /// 存储每个路径的颜色历史记录
+  ValueNotifier<List<Color>> pathColorHistory = ValueNotifier([]);
 
+  ValueNotifier<bool> isCancelStep = ValueNotifier(false);
   ValueNotifier<bool> isForwardStep = ValueNotifier(false);
 
+  List<Color> pathColor = [];
   int index = 0;
 
   /// 当用户开始触摸屏幕时，创建新的路径和新的点列表
-  void onPanStart(DragStartDetails details) {
+  void onPanStart(DragStartDetails details, Color color) {
     // 如果当前不是最新的历史记录，清除之后的历史记录
     if (index < pathsHistory.value.length) {
       pathsHistory.value = pathsHistory.value.sublist(0, index);
       pointsHistory.value = pointsHistory.value.sublist(0, index);
+      pathColorHistory.value =
+          pathColorHistory.value.sublist(0, index); // 同步清除颜色历史记录
     }
 
     // 创建新的路径和点列表
@@ -37,6 +42,8 @@ class SignaturePadController extends ChangeNotifier {
     // 更新历史记录
     pathsHistory.value.add(paths.value.last);
     pointsHistory.value.add(points.value.last);
+    pathColorHistory.value.add(color); // 同步记录颜色历史记录
+    pathColor.add(color);
 
     // 更新索引
     index = pathsHistory.value.length;
@@ -74,8 +81,10 @@ class SignaturePadController extends ChangeNotifier {
   /// 取消上一步绘制
   void cancelStep() {
     if (paths.value.isNotEmpty) {
+      // 移除路径、点和颜色
       paths.value.removeLast();
       points.value.removeLast();
+      pathColor.removeLast();
       index--;
 
       // 更新状态
@@ -91,11 +100,14 @@ class SignaturePadController extends ChangeNotifier {
   /// 上一步绘制
   void forwardStep() {
     if (index < pathsHistory.value.length) {
+      // 添加路径、点和颜色
       paths.value.add(pathsHistory.value[index]);
       points.value.add(pointsHistory.value[index]);
+      pathColor.add(pathColorHistory.value[index]); // 同步添加颜色
       index++;
 
       // 更新状态
+      isCancelStep.value = true;
       if (index == pathsHistory.value.length) {
         isForwardStep.value = false;
       }

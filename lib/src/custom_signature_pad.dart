@@ -37,7 +37,7 @@ class _SignaturePadState extends State<SignaturePad> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onPanStart: (DragStartDetails details) {
-        _controller.onPanStart(details);
+        _controller.onPanStart(details, widget.textColor);
       },
       onPanUpdate: (DragUpdateDetails details) {
         _controller.onPanUpdate(details);
@@ -48,7 +48,7 @@ class _SignaturePadState extends State<SignaturePad> {
         builder: (BuildContext context, Widget? child) {
           return CustomPaint(
             painter: SignaturePainter(_controller.paths.value,
-                textColor: widget.textColor,
+                pathColor: _controller.pathColor,
                 penSize: widget.penSize,
                 strokeCap: widget.strokeCap),
             size: Size.infinite,
@@ -61,9 +61,9 @@ class _SignaturePadState extends State<SignaturePad> {
 
 class SignaturePainter extends CustomPainter {
   final List<Path> paths;
+  final List<Color> pathColor;
 
   ///  文本颜色
-  Color textColor;
 
   /// 画笔大小
   double penSize;
@@ -71,20 +71,19 @@ class SignaturePainter extends CustomPainter {
   /// 画笔样式
   StrokeCap strokeCap;
   SignaturePainter(this.paths,
-      {required this.textColor,
-      required this.penSize,
+      {required this.penSize,
+      required this.pathColor,
       required this.strokeCap});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = penSize
-      ..strokeCap = strokeCap
-      ..style = PaintingStyle.stroke;
-    // 绘制每个路径
-    for (Path path in paths) {
-      canvas.drawPath(path, paint);
+    for (var i = 0; i < pathColor.length; i++) {
+      final Paint paint = Paint()
+        ..color = pathColor[i]
+        ..strokeWidth = penSize
+        ..strokeCap = strokeCap
+        ..style = PaintingStyle.stroke;
+      canvas.drawPath(paths[i], paint);
     }
   }
 

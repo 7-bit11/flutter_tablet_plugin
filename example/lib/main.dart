@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_tablet_plugin/flutter_tablet.dart';
 
@@ -30,6 +28,59 @@ class _MyAppState extends State<MyApp> {
     _controller.forwardStep();
   }
 
+  Color _textColor = Colors.black;
+  _changeColor(BuildContext context) {
+    List<Color> colors = [
+      Colors.red,
+      Colors.blue,
+      Colors.green,
+      Colors.yellow,
+      Colors.orange,
+      Colors.purple,
+      Colors.pink,
+      Colors.brown,
+      Colors.grey,
+      Colors.black,
+      Colors.white,
+    ];
+    showModalBottomSheet(
+      context: context,
+      //enableDrag: true,
+      showDragHandle: true,
+      elevation: 0,
+
+      builder: (context) {
+        return SizedBox(
+          height: 300,
+          child: GridView.builder(
+            padding: const EdgeInsets.all(8),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7),
+            itemCount: colors.length,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3),
+                  color: colors[index],
+                ),
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _textColor = colors[index];
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,8 +91,18 @@ class _MyAppState extends State<MyApp> {
       body: Center(
         child: SignaturePad(
           controller: _controller,
+          textColor: _textColor,
         ),
       ),
+      floatingActionButton: Builder(builder: (context) {
+        return FloatingActionButton(
+          onPressed: () {
+            _changeColor(context);
+            //data.close();
+          },
+          child: const Icon(Icons.color_lens),
+        );
+      }),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -50,8 +111,8 @@ class _MyAppState extends State<MyApp> {
                   return Icon(
                     Icons.arrow_left,
                     color: _controller.isCancelStep.value
-                        ? Colors.red
-                        : Colors.blue,
+                        ? Colors.blue
+                        : Colors.black,
                   );
                 },
                 listenable: _controller.isCancelStep,
@@ -63,15 +124,15 @@ class _MyAppState extends State<MyApp> {
                   return Icon(
                     Icons.arrow_right,
                     color: _controller.isForwardStep.value
-                        ? Colors.red
-                        : Colors.blue,
+                        ? Colors.blue
+                        : Colors.black,
                   );
                 },
                 listenable: _controller.isForwardStep,
               ),
               label: "Forward"),
         ],
-        onTap: (value) {
+        onTap: (value) async {
           if (value == 0) {
             _clear();
           } else if (value == 1) {
