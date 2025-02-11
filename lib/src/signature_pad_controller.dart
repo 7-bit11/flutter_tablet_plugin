@@ -18,10 +18,13 @@ class SignaturePadController extends ChangeNotifier {
   /// 存储每个路径的颜色历史记录
   ValueNotifier<List<Color>> pathColorHistory = ValueNotifier([]);
 
+  /// 存储每个路径的size历史记录
+  ValueNotifier<List<double>> sizeHistory = ValueNotifier([]);
   ValueNotifier<bool> isCancelStep = ValueNotifier(false);
   ValueNotifier<bool> isForwardStep = ValueNotifier(false);
-
+  ValueNotifier<double> size = ValueNotifier(5.0);
   List<Color> pathColor = [];
+  List<double> penSize = [];
   int index = 0;
 
   /// 当用户开始触摸屏幕时，创建新的路径和新的点列表
@@ -32,6 +35,7 @@ class SignaturePadController extends ChangeNotifier {
       pointsHistory.value = pointsHistory.value.sublist(0, index);
       pathColorHistory.value =
           pathColorHistory.value.sublist(0, index); // 同步清除颜色历史记录
+      sizeHistory.value = sizeHistory.value.sublist(0, index);
     }
 
     // 创建新的路径和点列表
@@ -43,6 +47,8 @@ class SignaturePadController extends ChangeNotifier {
     pathsHistory.value.add(paths.value.last);
     pointsHistory.value.add(points.value.last);
     pathColorHistory.value.add(color); // 同步记录颜色历史记录
+    penSize.add(size.value);
+    sizeHistory.value.add(penSize.last);
     pathColor.add(color);
 
     // 更新索引
@@ -85,6 +91,7 @@ class SignaturePadController extends ChangeNotifier {
       paths.value.removeLast();
       points.value.removeLast();
       pathColor.removeLast();
+      penSize.removeLast();
       index--;
 
       // 更新状态
@@ -104,6 +111,7 @@ class SignaturePadController extends ChangeNotifier {
       paths.value.add(pathsHistory.value[index]);
       points.value.add(pointsHistory.value[index]);
       pathColor.add(pathColorHistory.value[index]); // 同步添加颜色
+      penSize.add(sizeHistory.value[index]);
       index++;
 
       // 更新状态

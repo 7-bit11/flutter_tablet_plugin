@@ -8,16 +8,12 @@ class SignaturePad extends StatefulWidget {
     super.key,
     required this.controller,
     this.textColor = Colors.black,
-    this.penSize = 5.0,
     this.strokeCap = StrokeCap.round,
   });
   final SignaturePadController controller;
 
   ///  文本颜色
   Color textColor;
-
-  /// 画笔大小
-  double penSize;
 
   /// 画笔样式
   StrokeCap strokeCap;
@@ -49,7 +45,7 @@ class _SignaturePadState extends State<SignaturePad> {
           return CustomPaint(
             painter: SignaturePainter(_controller.paths.value,
                 pathColor: _controller.pathColor,
-                penSize: widget.penSize,
+                penSize: _controller.penSize,
                 strokeCap: widget.strokeCap),
             size: Size.infinite,
           );
@@ -62,11 +58,11 @@ class _SignaturePadState extends State<SignaturePad> {
 class SignaturePainter extends CustomPainter {
   final List<Path> paths;
   final List<Color> pathColor;
+  final List<double> penSize;
 
   ///  文本颜色
 
   /// 画笔大小
-  double penSize;
 
   /// 画笔样式
   StrokeCap strokeCap;
@@ -80,7 +76,7 @@ class SignaturePainter extends CustomPainter {
     for (var i = 0; i < pathColor.length; i++) {
       final Paint paint = Paint()
         ..color = pathColor[i]
-        ..strokeWidth = penSize
+        ..strokeWidth = penSize[i]
         ..strokeCap = strokeCap
         ..style = PaintingStyle.stroke;
       canvas.drawPath(paths[i], paint);

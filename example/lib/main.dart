@@ -81,6 +81,17 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  _changeSizeAdd() {
+    _controller.size.value++;
+  }
+
+  _changeSizeReduce() {
+    _controller.size.value--;
+  }
+
+  int _currentIndex = 0;
+
+  double size = 5;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -94,22 +105,38 @@ class _MyAppState extends State<MyApp> {
           textColor: _textColor,
         ),
       ),
-      floatingActionButton: Builder(builder: (context) {
-        return FloatingActionButton(
-          onPressed: () {
-            _changeColor(context);
-            //data.close();
-          },
-          child: const Icon(Icons.color_lens),
-        );
-      }),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Builder(builder: (context) {
+            return FloatingActionButton(
+              onPressed: () => _changeColor(context),
+              child: const Icon(Icons.color_lens),
+            );
+          }),
+          const SizedBox(width: 10),
+          FloatingActionButton(
+            onPressed: () => _changeSizeAdd(),
+            child: const Icon(Icons.add),
+          ),
+          const SizedBox(width: 10),
+          FloatingActionButton(
+            onPressed: () => _changeSizeReduce(),
+            child: const Icon(Icons.remove),
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
+        currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
               icon: ListenableBuilder(
                 builder: (context, clid) {
-                  return Icon(
-                    Icons.arrow_left,
+                  return Image.asset(
+                    width: 20,
+                    height: 20,
+                    "assets/icons/arrow_left.png",
                     color: _controller.isCancelStep.value
                         ? Colors.blue
                         : Colors.black,
@@ -121,8 +148,10 @@ class _MyAppState extends State<MyApp> {
           BottomNavigationBarItem(
               icon: ListenableBuilder(
                 builder: (context, clid) {
-                  return Icon(
-                    Icons.arrow_right,
+                  return Image.asset(
+                    width: 20,
+                    height: 20,
+                    "assets/icons/arrow_right.png",
                     color: _controller.isForwardStep.value
                         ? Colors.blue
                         : Colors.black,
@@ -138,6 +167,8 @@ class _MyAppState extends State<MyApp> {
           } else if (value == 1) {
             _forward();
           }
+          _currentIndex = value;
+          setState(() {});
         },
       ),
     ));
