@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         home: Scaffold(
       appBar: AppBar(
-        title: const Text('Plugin example app'),
+        title: const Text('手写板Demo'),
       ),
       body: Center(
         child: SignaturePad(
