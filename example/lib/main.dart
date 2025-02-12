@@ -92,6 +92,8 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
 
   double size = 5;
+
+  bool isEraser = false;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -99,11 +101,11 @@ class _MyAppState extends State<MyApp> {
       appBar: AppBar(
         title: const Text('手写板Demo'),
       ),
-      body: Center(
-        child: SignaturePad(
-          controller: _controller,
-          textColor: _textColor,
-        ),
+      body: SignaturePad(
+        controller: _controller,
+        textColor: _textColor,
+        backgroundColor: Colors.white,
+        isEraser: isEraser,
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -123,6 +125,12 @@ class _MyAppState extends State<MyApp> {
           FloatingActionButton(
             onPressed: () => _changeSizeReduce(),
             child: const Icon(Icons.remove),
+          ),
+          const SizedBox(width: 10),
+          FloatingActionButton(
+            onPressed: () => setState(() => isEraser = !isEraser),
+            child: Icon(Icons.clear_all,
+                color: isEraser ? Colors.red : Colors.black),
           ),
         ],
       ),
